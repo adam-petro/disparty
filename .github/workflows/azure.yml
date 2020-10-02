@@ -45,5 +45,5 @@ jobs:
         if: startsWith(github.ref,'refs/heads/main')
         uses: azure/webapps-deploy@v2
         with:
-          app-name: disparty-dev
+          app-name: disparty
           publish-profile: ${{ secrets.PROD_DEPLOY_CREDENTIALS }}
