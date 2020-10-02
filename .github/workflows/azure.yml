@@ -42,4 +42,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: disparty-dev
-        publish-profile: ${{ secrets.SCM_CREDENTIALS }}
+        publish-profile: ${{ secrets.DEPLOY_CREDENTIALS }}
