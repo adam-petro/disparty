@@ -14,13 +14,11 @@
 # For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
 on:
   push:
-    branches:
-      - "feature/**"
+    branches: '*'
 
 env:
-  AZURE_WEBAPP_NAME: disparty-dev # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: "10.x" # set this to the node version to use
+  NODE_VERSION: "12.x" # set this to the node version to use
 
 jobs:
   build-and-deploy:
@@ -37,8 +35,17 @@ jobs:
           # Build and test the project, then
           # deploy to Azure Web App.
           npm install
-      - name: "Deploy to Azure WebApp"
+      - name: "Deploy to Dev"
+        # deploy to dev in case of feature branch push
+        if: startsWith(github.ref,'refs/heads/feature')
         uses: azure/webapps-deploy@v2
         with:
           app-name: disparty-dev
           publish-profile: ${{ secrets.DEPLOY_CREDENTIALS }}
+      - name: "Deploy to prod"
+        # deploy to prod in case of main branch push
+        if: startsWith(github.ref,'refs/heads/master')
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: disparty-dev
+          publish-profile: ${{ secrets.PROD_DEPLOY_CREDENTIALS }}
