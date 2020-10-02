@@ -1,0 +1,22 @@
+{
+  "name": "disparty",
+  "version": "1.0.0",
+  "description": "Semester project for course IoT at AU",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adik6555/disparty.git"
+  },
+  "author": "Electric-sky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adik6555/disparty/issues"
+  },
+  "homepage": "https://github.com/adik6555/disparty#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
