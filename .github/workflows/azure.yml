@@ -42,7 +42,7 @@ jobs:
           publish-profile: ${{ secrets.DEPLOY_CREDENTIALS }}
       - name: "Deploy to prod"
         # deploy to prod in case of main branch push
-        if: startsWith(github.ref,'refs/heads/master')
+        if: startsWith(github.ref,'refs/heads/main')
         uses: azure/webapps-deploy@v2
         with:
           app-name: disparty-dev
