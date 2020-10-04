@@ -10,7 +10,7 @@ app.use(express.static("public"));
 
 const peerApp = express();
 var peerServer = require("http").createServer(peerApp);
-peerApp.use("/", ExpressPeerServer(peerServer));
+peerApp.use("/", ExpressPeerServer(peerServer, { port: 9000 }));
 
 app.get("/", (req, res) => {
   res.send(`<h1>Disparty</h1>
