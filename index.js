@@ -2,11 +2,14 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const io = require("socket.io").listen(server);
-const { PeerServer } = require("peer");
+const { ExpressPeerServer } = require("peer");
 const { v4: uuidV4 } = require("uuid");
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+
+var peerServer = require("http").createServer(app);
+app.use("/", ExpressPeerServer(peerServer));
 
 app.get("/", (req, res) => {
   res.send(`<h1>Disparty</h1>
@@ -32,7 +35,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const peerServer = PeerServer({ port: 8081, path: "/" });
 server.listen(8080, () => {
   console.log("app listening");
 });
+peerServer.listen(9000);

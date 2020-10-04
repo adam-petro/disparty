@@ -1,7 +1,7 @@
 const socket = io("/");
 const myPeer = new Peer(undefined, {
   host: "/",
-  port: "8081",
+  port: "9000",
 });
 const peers = {};
 const videoGrid = $("#video-grid");
