@@ -23,7 +23,7 @@ app.get("/join-room", (req, res) => {
   if (issuedRoomsId.includes(req.query["room-id"])) {
     res.redirect(`/room/${req.query["room-id"]}`);
   } else {
-    res.send("sorry");
+    res.send("invalid room, 404 man");
   }
 });
 
@@ -32,12 +32,13 @@ app.get("/room/:roomId", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomId, userId) => {
-    socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected", userId);
+  socket.on("join-room", (data) => {
+    console.log("join-room", data.roomId, data.userId);
+    socket.join(data.roomId);
+    socket.to(data.roomId).broadcast.emit("user-connected", data);
 
     socket.on("disconnect", () => {
-      socket.to(roomId).broadcast.emit("user-disconnected", userId);
+      socket.to(data.roomId).broadcast.emit("user-disconnected", data);
     });
   });
 });
