@@ -4,7 +4,12 @@ const server = require("http").Server(app);
 const io = require("socket.io").listen(server);
 const { v4: uuidV4 } = require("uuid");
 
+//String
 issuedRoomsId = [];
+
+// roomId:initiatorConnectionString
+initiators = {};
+socketrooms = {};
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -28,18 +33,28 @@ app.get("/join-room", (req, res) => {
 });
 
 app.get("/room/:roomId", (req, res) => {
-  res.render("room", { roomId: req.params.roomId });
+  res.render("room", {
+    roomId: req.params.roomId,
+    initiator: initiators[req.params.roomId],
+  });
 });
-
 io.on("connection", (socket) => {
-  socket.on("join-room", (data) => {
-    console.log("join-room", data.roomId, data.userId);
-    socket.join(data.roomId);
-    socket.to(data.roomId).broadcast.emit("user-connected", data);
+  socket.on("initiated-room", (data) => {
+    if (!initiators[data.roomId]) {
+      initiators[data.roomId] = data.userId;
+      socketrooms[data.roomId] = data.socketId;
+    }
 
     socket.on("disconnect", () => {
       socket.to(data.roomId).broadcast.emit("user-disconnected", data);
     });
+  });
+
+  socket.on("signal-reply", (data) => {
+    socket.join(data.roomId);
+    socket
+      .to(socketrooms[data.roomId])
+      .broadcast.emit("user-connected", data.connectionData);
   });
 });
 

@@ -1,30 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/room.css" />
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.7.2/simplepeer.min.js"
+      defer
+    ></script>
+    <script>
+      ROOM_ID = "<%- roomId %>";
+      INITIATOR = "<%- initiator %>";
+    </script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="/room.js" defer></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <link rel="stylesheet" href="/room.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.7.2/simplepeer.min.js" defer></script>
-  <script>
-    ROOM_ID = "<%= roomId %>";
-  </script>
-  <script src="/socket.io/socket.io.js" defer></script>
-  <script src="/room.js" defer></script>
-</head>
+  <body>
+    <header>
+      <h1>Welcome to room <i><%= roomId %></i></h1>
+    </header>
+    <form>
+      <textarea id="my-id"></textarea>
+      <label>Other ID:</label><br />
+    </form>
 
-<body>
-  <header>
-    <h1>Welcome to room <i><%= roomId %></i></h1>
-  </header>
-  <form>
-    <textarea id="my-id"></textarea>
-  </form>
-  <section>
-    <div id="video-grid"></div>
-  </section>
-</body>
+    <label>Enter Message:</label><br />
+    <textarea id="yourMessage"></textarea>
+    <button id="send">send</button>
+    <pre id="messages"></pre>
 
+    <section>
+      <div id="video-grid"></div>
+    </section>
+  </body>
 </html>
