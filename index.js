@@ -7,9 +7,8 @@ const { v4: uuidV4 } = require("uuid");
 //String
 issuedRoomsId = [];
 
-// roomId:initiatorConnectionString
-initiators = {};
-socketrooms = {};
+const socketToRoom = {};
+const users = {};
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -35,26 +34,48 @@ app.get("/join-room", (req, res) => {
 app.get("/room/:roomId", (req, res) => {
   res.render("room", {
     roomId: req.params.roomId,
-    initiator: initiators[req.params.roomId],
   });
 });
-io.on("connection", (socket) => {
-  socket.on("initiated-room", (data) => {
-    if (!initiators[data.roomId]) {
-      initiators[data.roomId] = data.userId;
-      socketrooms[data.roomId] = data.socketId;
-    }
 
-    socket.on("disconnect", () => {
-      socket.to(data.roomId).broadcast.emit("user-disconnected", data);
+io.on("connection", (socket) => {
+  socket.on("join-room", (roomID) => {
+    if (users[roomID]) {
+      const length = users[roomID].length;
+      if (length === 4) {
+        socket.emit("room full");
+        return;
+      }
+      users[roomID].push(socket.id);
+    } else {
+      users[roomID] = [socket.id];
+    }
+    socketToRoom[socket.id] = roomID;
+    const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+
+    socket.emit("all-users", usersInThisRoom);
+  });
+
+  socket.on("sending-signal", (payload) => {
+    io.to(payload.userToSignal).emit("user-joined", {
+      signal: payload.signal,
+      callerID: payload.callerID,
     });
   });
 
-  socket.on("signal-reply", (data) => {
-    socket.join(data.roomId);
-    socket
-      .to(socketrooms[data.roomId])
-      .broadcast.emit("user-connected", data.connectionData);
+  socket.on("return-signal", (payload) => {
+    io.to(payload.callerID).emit("received-returned-signal", {
+      signal: payload.signal,
+      id: socket.id,
+    });
+  });
+
+  socket.on("disconnect", () => {
+    const roomID = socketToRoom[socket.id];
+    let room = users[roomID];
+    if (room) {
+      room = room.filter((id) => id !== socket.id);
+      users[roomID] = room;
+    }
   });
 });
 
