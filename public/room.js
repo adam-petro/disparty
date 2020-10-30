@@ -1,19 +1,22 @@
-const socket = io.connect("/");
-let stream;
+adconst socket = io.connect("/");
 let myPeers = [];
 
-async function getMedia() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-  } catch (err) {
-    console.error("unable to retrieve user cam/mic", err);
-  }
-}
+const videoGrid = document.getElementById("video-grid");
 
-async function main() {
+const myVideo = document.createElement("video");
+myVideo.muted = true;
+
+navigator.mediaDevices
+  .getUserMedia({
+    video: true,
+    audio: true,
+  })
+  .then((stream) => {
+    addVideoStream(myVideo, stream);
+    main(stream);
+  });
+
+function main(stream) {
   //On join, tell the server and all the users in the room tha
   socket.emit("join-room", ROOM_ID);
 
@@ -47,7 +50,7 @@ async function main() {
     const peer = new SimplePeer({
       initiator: false,
       trickle: false,
-      stream,
+      stream: stream,
     });
     //The signal event is going to be fired when current user is getting and offer
     peer.on("signal", (signal) => {
@@ -55,25 +58,46 @@ async function main() {
       socket.emit("return-signal", { signal, callerId });
     });
 
+    peer.on("stream", (stream) => {
+      const video = document.createElement("video");
+      addVideoStream(video, stream);
+    });
+
     //Signal back - accept the offer
     peer.signal(incomingSignal);
+    return peer;
   }
 
   function createPeer(userToSignal, myId, stream) {
     const peer = new SimplePeer({
       initiator: true,
       trickle: false,
-      stream,
+      stream: stream,
     });
     //The signal event is going to fire instantly, because current user is initiator
     peer.on("signal", (signal) => {
       socket.emit("sending-signal", { userToSignal, myId, signal });
     });
+    peer.on("stream", (stream) => {
+      const video = document.createElement("video");
+      addVideoStream(video, stream);
+    });
+    return peer;
   }
 }
-getMedia();
-main();
-
+function addVideoStream(video, stream) {
+  if ("srcObject" in video) {
+    video.srcObject = stream;
+  } else {
+    video.src = window.URL.createObjectURL(stream);
+  }
+  video.addEventListener("loadedmetadata", () => {
+    console.log(video);
+    console.log(stream);
+  });
+  videoGrid.append(video);
+  video.play();
+}
 //On established connection to WS server, connect to room
 // socket.on("connect", () => {
 //   if (location.hash === "#init") {
