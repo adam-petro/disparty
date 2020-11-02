@@ -58,12 +58,12 @@ io.on("connection", (socket) => {
   socket.on("sending-signal", (payload) => {
     io.to(payload.userToSignal).emit("user-joined", {
       signal: payload.signal,
-      callerID: payload.callerID,
+      callerId: payload.callerId,
     });
   });
 
   socket.on("return-signal", (payload) => {
-    io.to(payload.callerID).emit("received-returned-signal", {
+    io.to(payload.callerId).emit("received-returned-signal", {
       signal: payload.signal,
       id: socket.id,
     });

@@ -1,4 +1,4 @@
-adconst socket = io.connect("/");
+const socket = io.connect("/");
 let myPeers = [];
 
 const videoGrid = document.getElementById("video-grid");
@@ -76,7 +76,7 @@ function main(stream) {
     });
     //The signal event is going to fire instantly, because current user is initiator
     peer.on("signal", (signal) => {
-      socket.emit("sending-signal", { userToSignal, myId, signal });
+      socket.emit("sending-signal", { userToSignal, callerId:myId, signal });
     });
     peer.on("stream", (stream) => {
       const video = document.createElement("video");
