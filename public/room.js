@@ -33,11 +33,14 @@ function main(stream) {
   });
 
   socket.on("user-joined", (payload) => {
-    const peer = addPeer(payload.signal, payload.callerId, stream);
-    myPeers.push({
-      peerId: payload.callerId,
-      peer,
-    });
+    const item = myPeers.find(p => p.peerId == payload.callerId);
+    if (!item) {
+      const peer = addPeer(payload.signal, payload.callerId, stream);
+      myPeers.push({
+        peerId: payload.callerId, 
+        peer
+      });
+    }
   });
 
   socket.on("received-returned-signal", (payload) => {
