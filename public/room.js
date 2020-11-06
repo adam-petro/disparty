@@ -33,12 +33,12 @@ function main(stream) {
   });
 
   socket.on("user-joined", (payload) => {
-    const item = myPeers.find(p => p.peerId == payload.callerId);
+    const item = myPeers.find((p) => p.peerId == payload.callerId);
     if (!item) {
       const peer = addPeer(payload.signal, payload.callerId, stream);
       myPeers.push({
-        peerId: payload.callerId, 
-        peer
+        peerId: payload.callerId,
+        peer,
       });
     }
   });
@@ -53,7 +53,7 @@ function main(stream) {
     const peer = new SimplePeer({
       initiator: false,
       trickle: false,
-      stream: stream,
+      streams: [stream],
     });
     //The signal event is going to be fired when current user is getting and offer
     peer.on("signal", (signal) => {
@@ -75,11 +75,11 @@ function main(stream) {
     const peer = new SimplePeer({
       initiator: true,
       trickle: false,
-      stream: stream,
+      streams: [stream],
     });
     //The signal event is going to fire instantly, because current user is initiator
     peer.on("signal", (signal) => {
-      socket.emit("sending-signal", { userToSignal, callerId:myId, signal });
+      socket.emit("sending-signal", { userToSignal, callerId: myId, signal });
     });
     peer.on("stream", (stream) => {
       const video = document.createElement("video");
@@ -101,54 +101,16 @@ function addVideoStream(video, stream) {
   videoGrid.append(video);
   video.play();
 }
-//On established connection to WS server, connect to room
-// socket.on("connect", () => {
-//   if (location.hash === "#init") {
-//     peer.on("signal", (peerData) => {
-//       console.log("someone is calling");
-//       let connectionData = {
-//         roomId: ROOM_ID,
-//         userId: btoa(JSON.stringify(peerData)),
-//         socketId: socket.id,
-//       };
-//       socket.emit("initiated-room", connectionData);
-//     });
-//   } else {
-//     console.log("emitted ordinary user-join");
-//     socket.emit("join-user", { socketId: socket.id, roomId: ROOM_ID });
-//   }
-// });
 
-// if (location.hash !== "#init") {
-//   peer.signal(atob(INITIATOR));
-// }
-// socket.on("initiator-address", (data) => {
-//   console.log(data);
-// });
+// Whenever new video is added to the website, add it to each peer's stream. This does not work yet, needs to be fixed.
 
-// //temp function to populate textarea with connection data
-// peer.on("signal", (data) => {
-//   $("#my-id").val(JSON.stringify(data));
-//   if (location.hash !== "#init") {
-//     socket.emit("signal-reply", {
-//       roomId: ROOM_ID,
-//       connectionData: btoa(JSON.stringify(data)),
-//     });
-//   }
-// });
-
-// if (location.hash === "#init") {
-//   socket.on("user-connected", (data) => {
-//     peer.signal(atob(data));
-//     console.log(data);
-//   });
-// }
-
-// document.getElementById("send").addEventListener("click", function () {
-//   var yourMessage = document.getElementById("yourMessage").value;
-//   peer.send(yourMessage);
-// });
-
-// peer.on("data", function (data) {
-//   document.getElementById("messages").textContent += data + "\n";
-// });
+let localVideoInput = document.querySelector("#video-input");
+localVideoInput.addEventListener("added-video", () => {
+  myPeers.forEach((peer) => {
+    localVideo = document.querySelector("#local-video");
+    stream = localVideo.captureStream();
+    console.log(localVideo);
+    peer["peer"].streams.push(stream);
+    console.log(peer["peer"]);
+  });
+});
