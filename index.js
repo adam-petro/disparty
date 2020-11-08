@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 app.get("/new-room", (req, res) => {
   newId = uuidV4();
   issuedRoomsId.push(newId);
-  res.redirect(`/room/${newId}`);
+  res.redirect(`/room/${newId}#init`);
 });
 
 app.get("/join-room", (req, res) => {
@@ -53,6 +53,13 @@ io.on("connection", (socket) => {
     const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
 
     socket.emit("all-users", usersInThisRoom);
+  });
+
+  socket.on("added-video", (roomID) => {
+    const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+    usersInThisRoom.forEach((user) => {
+      io.to(user).emit("added-video");
+    });
   });
 
   socket.on("sending-signal", (payload) => {

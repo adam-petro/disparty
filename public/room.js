@@ -2,7 +2,6 @@ const socket = io.connect("/");
 let myPeers = [];
 
 const videoGrid = document.getElementById("video-grid");
-
 const myVideo = document.createElement("video");
 myVideo.muted = true;
 
@@ -44,7 +43,6 @@ function main(stream) {
   });
 
   socket.on("received-returned-signal", (payload) => {
-    console.log("received");
     const item = myPeers.find((p) => p.peerId === payload.id);
     item.peer.signal(payload.signal);
   });
@@ -94,10 +92,6 @@ function addVideoStream(video, stream) {
   } else {
     video.src = window.URL.createObjectURL(stream);
   }
-  video.addEventListener("loadedmetadata", () => {
-    console.log(video);
-    console.log(stream);
-  });
   videoGrid.append(video);
   video.play();
 }
@@ -106,11 +100,18 @@ function addVideoStream(video, stream) {
 
 let localVideoInput = document.querySelector("#video-input");
 localVideoInput.addEventListener("added-video", () => {
+  localVideo = document.querySelector("#local-video");
+  stream = localVideo.captureStream();
   myPeers.forEach((peer) => {
-    localVideo = document.querySelector("#local-video");
-    stream = localVideo.captureStream();
-    console.log(localVideo);
-    peer["peer"].streams.push(stream);
-    console.log(peer["peer"]);
+    peer["peer"].addStream(stream);
+  });
+  socket.emit("added-video", ROOM_ID);
+});
+
+socket.on("added-video", () => {
+  myPeers.forEach((peer) => {
+    peer["peer"].on("stream", () => {
+      console.log("received stream");
+    });
   });
 });
