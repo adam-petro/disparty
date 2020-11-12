@@ -64,6 +64,10 @@ function main(stream) {
       addVideoStream(video, stream);
     });
 
+    peer.on("track", () => {
+      console.log("received track in addPeer");
+    });
+
     //Signal back - accept the offer
     peer.signal(incomingSignal);
     return peer;
@@ -83,6 +87,9 @@ function main(stream) {
       const video = document.createElement("video");
       addVideoStream(video, stream);
     });
+    peer.on("track", () => {
+      console.log("received track in createPeer");
+    });
     return peer;
   }
 }
@@ -101,17 +108,24 @@ function addVideoStream(video, stream) {
 let localVideoInput = document.querySelector("#video-input");
 localVideoInput.addEventListener("added-video", () => {
   localVideo = document.querySelector("#local-video");
-  stream = localVideo.captureStream();
-  myPeers.forEach((peer) => {
-    peer["peer"].addStream(stream);
+  localVideo.addEventListener("loadedmetadata", async () => {
+    stream = localVideo.captureStream();
+    await myPeers.forEach((peer) => {
+      peer["peer"].addStream(stream);
+    });
+    socket.emit("added-video", ROOM_ID);
   });
-  socket.emit("added-video", ROOM_ID);
 });
 
 socket.on("added-video", () => {
+  console.log("received added video event");
   myPeers.forEach((peer) => {
+    console.log(peer["peer"].streams[0].getTracks());
     peer["peer"].on("stream", () => {
       console.log("received stream");
+    });
+    peer["peer"].on("track", () => {
+      console.log("received track");
     });
   });
 });
