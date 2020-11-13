@@ -22,12 +22,10 @@ function main(stream) {
   //When received info on all users already in a room
   socket.on("all-users", (users) => {
     //initialize new array for rendering purposes
-    const peers = [];
     users.forEach((userId) => {
       const peer = createPeer(userId, socket.id, stream);
       //Push into the array of current user's peers
       myPeers.push({ peerId: userId, peer });
-      peers.push(peer);
     });
   });
 
@@ -131,8 +129,8 @@ socket.on("added-video", () => {
 });
 
 // Helper function to copy ROOM_ID to clipboard - for developing purposes only.
-const copyButton = document.querySelector('#copy-button');
-copyButton.addEventListener('click', function(event) {
+const copyButton = document.querySelector("#copy-button");
+copyButton.addEventListener("click", function (event) {
   const dummy = document.createElement("textarea");
   document.body.appendChild(dummy);
   dummy.value = ROOM_ID;
