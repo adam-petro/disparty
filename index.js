@@ -40,11 +40,6 @@ app.get("/room/:roomId", (req, res) => {
 io.on("connection", (socket) => {
   socket.on("join-room", (roomID) => {
     if (users[roomID]) {
-      const length = users[roomID].length;
-      if (length === 4) {
-        socket.emit("room full");
-        return;
-      }
       users[roomID].push(socket.id);
     } else {
       users[roomID] = [socket.id];
@@ -82,6 +77,13 @@ io.on("connection", (socket) => {
     if (room) {
       room = room.filter((id) => id !== socket.id);
       users[roomID] = room;
+    }
+    delete socketToRoom[socket.id];
+    if (users[roomID]) {
+      const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+      usersInThisRoom.forEach((user) => {
+        socket.to(user).emit("user-disconnected", socket.id);
+      });
     }
   });
 });

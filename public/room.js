@@ -16,19 +16,20 @@ navigator.mediaDevices
   });
 
 function main(stream) {
-  //On join, tell the server and all the users in the room tha
+  //On join, tell the server that you joined
   socket.emit("join-room", ROOM_ID);
 
   //When received info on all users already in a room
   socket.on("all-users", (users) => {
-    //initialize new array for rendering purposes
     users.forEach((userId) => {
+      //Create a new p2p connection for each of the users already in room
       const peer = createPeer(userId, socket.id, stream);
       //Push into the array of current user's peers
       myPeers.push({ peerId: userId, peer });
     });
   });
 
+  //When new user joined
   socket.on("user-joined", (payload) => {
     const item = myPeers.find((p) => p.peerId == payload.callerId);
     if (!item) {
@@ -59,11 +60,8 @@ function main(stream) {
 
     peer.on("stream", (stream) => {
       const video = document.createElement("video");
+      video.id = callerId;
       addVideoStream(video, stream);
-    });
-
-    peer.on("track", () => {
-      console.log("received track in addPeer");
     });
 
     //Signal back - accept the offer
@@ -71,23 +69,29 @@ function main(stream) {
     return peer;
   }
 
+  //userToSignal = socket id of user we're trying to signal
+  //myId = socket id of current user
+  //stream = mediastream of current user
   function createPeer(userToSignal, myId, stream) {
     const peer = new SimplePeer({
       initiator: true,
       trickle: false,
       streams: [stream],
     });
-    //The signal event is going to fire instantly, because current user is initiator
+
+    //The signal event is going to fire instantly, because current user is initiator.
+    //Tell the server that we are trying to signal userToSignal and that myId is our address
     peer.on("signal", (signal) => {
       socket.emit("sending-signal", { userToSignal, callerId: myId, signal });
     });
+
+    //When a stream is received, process it
     peer.on("stream", (stream) => {
       const video = document.createElement("video");
+      video.id = userToSignal;
       addVideoStream(video, stream);
     });
-    peer.on("track", () => {
-      console.log("received track in createPeer");
-    });
+
     return peer;
   }
 }
@@ -100,6 +104,11 @@ function addVideoStream(video, stream) {
   videoGrid.append(video);
   video.play();
 }
+
+socket.on("user-disconnected", (userId) => {
+  document.getElementById(userId).remove();
+  delete myPeers[userId];
+});
 
 // Whenever new video is added to the website, add it to each peer's stream. This does not work yet, needs to be fixed.
 
