@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/room.css" />
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      defer
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.7.2/simplepeer.min.js"
+      defer
+    ></script>
+    <script>
+      ROOM_ID = "<%- roomId %>";
+    </script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <script src="/room.js" defer></script>
+    <script src="/videoPlaybackHandle.js" sc defer></script>
+  </head>
+
+  <body>
+    <header>
+      <h1>Welcome to room <i><%= roomId %></i></h1>
+    </header>
+    <div>
+      <a href="/"><button>Back</button></a>
+      <button id="copy-button">Copy room id</button>
+    </div>
+    <div>
+      <div id="message"></div>
+      <input id="video-input" type="file" accept="video/*" />
+      <video controls id="local-video"></video>
+    </div>
+    <section>
+      <div id="video-grid"></div>
+    </section>
+  </body>
+</html>
