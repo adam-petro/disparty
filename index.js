@@ -8,6 +8,8 @@ const { v4: uuidV4 } = require("uuid");
 issuedRoomsId = [];
 
 const socketToRoom = {};
+
+//JSON with structure roomId:[usersInRoom]
 const users = {};
 
 app.set("view engine", "ejs");
@@ -38,20 +40,20 @@ app.get("/room/:roomId", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomID) => {
-    if (users[roomID]) {
-      users[roomID].push(socket.id);
+  socket.on("join-room", (roomId) => {
+    if (users[roomId]) {
+      users[roomId].push(socket.id);
     } else {
-      users[roomID] = [socket.id];
+      users[roomId] = [socket.id];
     }
-    socketToRoom[socket.id] = roomID;
-    const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+    socketToRoom[socket.id] = roomId;
+    const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
 
     socket.emit("all-users", usersInThisRoom);
   });
 
-  socket.on("added-video", (roomID) => {
-    const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+  socket.on("added-video", (roomId) => {
+    const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
     usersInThisRoom.forEach((user) => {
       io.to(user).emit("added-video");
     });
@@ -72,15 +74,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const roomID = socketToRoom[socket.id];
-    let room = users[roomID];
+    const roomId = socketToRoom[socket.id];
+    let room = users[roomId];
     if (room) {
       room = room.filter((id) => id !== socket.id);
-      users[roomID] = room;
+      users[roomId] = room;
     }
     delete socketToRoom[socket.id];
-    if (users[roomID]) {
-      const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
+    if (users[roomId]) {
+      const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
       usersInThisRoom.forEach((user) => {
         socket.to(user).emit("user-disconnected", socket.id);
       });
