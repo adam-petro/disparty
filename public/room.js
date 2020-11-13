@@ -47,10 +47,11 @@ function main(stream) {
   });
 
   function addPeer(incomingSignal, callerId, stream) {
+    const dummyStream = stream.clone();
     const peer = new SimplePeer({
       initiator: false,
-      trickle: false,
-      streams: [stream],
+      trickle: true,
+      streams: [stream, dummyStream],
     });
     //The signal event is going to be fired when current user is getting and offer
     peer.on("signal", (signal) => {
@@ -73,10 +74,11 @@ function main(stream) {
   //myId = socket id of current user
   //stream = mediastream of current user
   function createPeer(userToSignal, myId, stream) {
+    const dummyStream = stream.clone();
     const peer = new SimplePeer({
       initiator: true,
-      trickle: false,
-      streams: [stream],
+      trickle: true,
+      streams: [stream, dummyStream],
     });
 
     //The signal event is going to fire instantly, because current user is initiator.
@@ -118,7 +120,18 @@ localVideoInput.addEventListener("added-video", () => {
   localVideo.addEventListener("loadedmetadata", async () => {
     stream = localVideo.captureStream();
     await myPeers.forEach((peer) => {
-      peer["peer"].addStream(stream);
+      console.log(peer["peer"].streams[1].getTracks());
+      console.log(stream.getTracks());
+      peer["peer"].replaceTrack(
+        peer["peer"].streams[1].getTracks()[1],
+        stream.getTracks()[1],
+        peer["peer"].streams[1]
+      );
+      peer["peer"].replaceTrack(
+        peer["peer"].streams[1].getTracks()[0],
+        stream.getTracks()[0],
+        peer["peer"].streams[1]
+      );
     });
     socket.emit("added-video", ROOM_ID);
   });
