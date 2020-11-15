@@ -59,9 +59,8 @@ function main(stream) {
     const peer = new SimplePeer({
       initiator: false,
       trickle: true,
+      streams: [stream, dummyStream],
     });
-    peer.addStream(stream);
-    if (currentlyAdmin) peer.addStream(dummyStream);
     //The signal event is going to be fired when current user is getting and offer
     peer.on("signal", (signal) => {
       //Let the caller know our signal
@@ -71,6 +70,8 @@ function main(stream) {
     peer.on("stream", (stream) => {
       handleVideoProcessing(callerId, stream);
     });
+
+    if (!currentlyAdmin) peer.removeStream(dummyStream);
 
     //Signal back - accept the offer
     peer.signal(incomingSignal);
@@ -85,9 +86,8 @@ function main(stream) {
     const peer = new SimplePeer({
       initiator: true,
       trickle: true,
+      streams: [stream, dummyStream],
     });
-    peer.addStream(stream);
-    if (currentlyAdmin) peer.addStream(dummyStream);
 
     //The signal event is going to fire instantly, because current user is initiator.
     //Tell the server that we are trying to signal userToSignal and that myId is our address
@@ -99,6 +99,7 @@ function main(stream) {
     peer.on("stream", (stream) => {
       handleVideoProcessing(userToSignal, stream);
     });
+    if (!currentlyAdmin) peer.removeStream(dummyStream);
 
     return peer;
   }
@@ -108,15 +109,13 @@ function main(stream) {
   });
 
   socket.on("added-video", () => {
-    myPeers.forEach((peer) => {
-      console.log(peer["peer"].streams);
-      if (peer.streams.length === 2) {
-        handleVideoProcessing(peer.id + "-main", peer.streams[1]);
-      }
-    });
+    const video = document.createElement("video");
+    //Check in case of old browser
+    video.id = adminVideoStream.videoId + "-admin";
+    addVideoStream(adminVideoStream.stream, video);
   });
 }
-function addVideoStream(stream, video) {
+async function addVideoStream(stream, video) {
   //Check in case of old browser
   if ("srcObject" in video) {
     video.srcObject = stream;
@@ -124,12 +123,30 @@ function addVideoStream(stream, video) {
     video.src = window.URL.createObjectURL(stream);
   }
   videoGrid.append(video);
-  video.play();
+  const playPromise = video.play();
+
+  // In browsers that don’t yet support this functionality,
+  // playPromise won’t be defined.
+  if (playPromise !== undefined) {
+    playPromise
+      .then(function () {
+        // Automatic playback started!
+      })
+      .catch(function (error) {
+        console.error(error);
+        // Automatic playback failed.
+        // Show a UI element to let the user manually start playback.
+      });
+  }
 }
 
 function handleVideoProcessing(videoId, stream) {
-  console.log(stream);
-  const video = document.createElement("video");
-  video.id = videoId;
-  addVideoStream(stream, video);
+  if (!document.getElementById(videoId)) {
+    console.log(stream);
+    const video = document.createElement("video");
+    video.id = videoId;
+    addVideoStream(stream, video);
+  } else {
+    adminVideoStream = { videoId, stream };
+  }
 }
