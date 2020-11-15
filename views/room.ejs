@@ -18,7 +18,8 @@
     </script>
     <script src="/socket.io/socket.io.js" defer></script>
     <script src="/room.js" defer></script>
-    <script src="/videoPlaybackHandle.js" sc defer></script>
+    <script src="/videoPlaybackHandle.js" defer></script>
+    <script src="/helpers.js" defer></script>
   </head>
 
   <body>
@@ -28,11 +29,6 @@
     <div>
       <a href="/"><button>Back</button></a>
       <button id="copy-button">Copy room id</button>
-    </div>
-    <div>
-      <div id="message"></div>
-      <input id="video-input" type="file" accept="video/*" />
-      <video controls id="local-video"></video>
     </div>
     <section>
       <div id="video-grid"></div>

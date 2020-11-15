@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
 app.get("/new-room", (req, res) => {
   newId = uuidV4();
   issuedRoomsId.push(newId);
-  res.redirect(`/room/${newId}#init`);
+  res.redirect(`/room/${newId}`);
 });
 
 app.get("/join-room", (req, res) => {
