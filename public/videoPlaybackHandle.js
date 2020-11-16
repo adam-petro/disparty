@@ -58,8 +58,10 @@ function handleVideoStreaming() {
           stream.getTracks()[0],
           peer["peer"].streams[1]
         );
+
+        peer["peer"].send("started-streaming");
       });
-      socket.emit("added-video", ROOM_ID);
+      // socket.emit("added-video", ROOM_ID);
     });
   });
 }

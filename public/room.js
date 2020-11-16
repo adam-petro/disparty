@@ -1,7 +1,8 @@
 const socket = io.connect("/");
-let myPeers = [];
 let currentlyAdmin = false;
+let currentlyStreaming = false;
 let adminVideoStream;
+let myId;
 
 const videoGrid = document.getElementById("video-grid");
 const myVideo = document.createElement("video");
@@ -18,6 +19,7 @@ navigator.mediaDevices
   });
 
 function main(stream) {
+  myId = socket.id;
   //On join, tell the server that you joined
   socket.emit("join-room", ROOM_ID);
 
@@ -60,6 +62,7 @@ function main(stream) {
       initiator: false,
       trickle: true,
       streams: [stream, dummyStream],
+      objectMode: true,
     });
     //The signal event is going to be fired when current user is getting and offer
     peer.on("signal", (signal) => {
@@ -69,6 +72,12 @@ function main(stream) {
 
     peer.on("stream", (stream) => {
       handleVideoProcessing(callerId, stream);
+    });
+    peer.on("data", (data) => {
+      console.log(data);
+      if (data.toString() === "started-streaming") {
+        handleStartedStreaming();
+      }
     });
 
     if (!currentlyAdmin) peer.removeStream(dummyStream);
@@ -87,6 +96,7 @@ function main(stream) {
       initiator: true,
       trickle: true,
       streams: [stream, dummyStream],
+      objectMode: true,
     });
 
     //The signal event is going to fire instantly, because current user is initiator.
@@ -99,6 +109,13 @@ function main(stream) {
     peer.on("stream", (stream) => {
       handleVideoProcessing(userToSignal, stream);
     });
+
+    peer.on("data", (data) => {
+      console.log(data);
+      if(data.toString()==="started-streaming"){
+        handleStartedStreaming()
+      }
+    });
     if (!currentlyAdmin) peer.removeStream(dummyStream);
 
     return peer;
@@ -106,13 +123,6 @@ function main(stream) {
   socket.on("user-disconnected", (userId) => {
     document.getElementById(userId).remove();
     delete myPeers[userId];
-  });
-
-  socket.on("added-video", () => {
-    const video = document.createElement("video");
-    //Check in case of old browser
-    video.id = adminVideoStream.videoId + "-admin";
-    addVideoStream(adminVideoStream.stream, video);
   });
 }
 async function addVideoStream(stream, video) {
@@ -149,4 +159,11 @@ function handleVideoProcessing(videoId, stream) {
   } else {
     adminVideoStream = { videoId, stream };
   }
+}
+
+function handleStartedStreaming(){
+      const video = document.createElement("video");
+      //Check in case of old browser
+      video.id = adminVideoStream.videoId + "-admin";
+      addVideoStream(adminVideoStream.stream, video);
 }
