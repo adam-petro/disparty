@@ -20,6 +20,7 @@ navigator.mediaDevices
 
 function main(stream) {
   myId = socket.id;
+  openChatWindow("group", myPeers);
   //On join, tell the server that you joined
   socket.emit("join-room", ROOM_ID);
 
@@ -75,7 +76,7 @@ function main(stream) {
     });
     peer.on("data", (data) => {
       data = JSON.parse(data);
-      if (data["type"] === "message") {
+      if (data["type"] === "message" || data["type"] === "group-message") {
         receiveMessage(data);
       }
     });
@@ -132,7 +133,10 @@ function main(stream) {
         data["data"] === "started-streaming"
       ) {
         handleStartedStreaming();
-      } else if (data["type"] === "message") {
+      } else if (
+        data["type"] === "message" ||
+        data["type"] === "group-message"
+      ) {
         receiveMessage(data);
       }
     });
@@ -145,6 +149,14 @@ function main(stream) {
   socket.on("user-disconnected", (userId) => {
     document.getElementById(userId).remove();
     delete myPeers[userId];
+    myPeers.splice(
+      myPeers.indexOf(
+        myPeers.find((p) => {
+          return p.peerId === userId;
+        })
+      ),
+      1
+    );
     removeChatWindow(userId);
   });
 }
