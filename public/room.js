@@ -60,7 +60,7 @@ function main(stream) {
     const secondStream = stream.clone();
     const peer = new SimplePeer({
       initiator: false,
-      trickle: true,
+      trickle: false,
       streams: [stream, secondStream],
       objectMode: true,
     });
@@ -103,7 +103,7 @@ function main(stream) {
     const secondStream = stream.clone();
     const peer = new SimplePeer({
       initiator: true,
-      trickle: true,
+      trickle: false,
       streams: [stream, secondStream],
       objectMode: true,
     });
