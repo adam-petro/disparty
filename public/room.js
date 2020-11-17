@@ -57,11 +57,11 @@ function main(stream) {
   });
 
   function addPeer(incomingSignal, callerId, stream) {
-    const dummyStream = stream.clone();
+    const secondStream = stream.clone();
     const peer = new SimplePeer({
       initiator: false,
       trickle: true,
-      streams: [stream, dummyStream],
+      streams: [stream, secondStream],
       objectMode: true,
     });
     //The signal event is going to be fired when current user is getting and offer
@@ -74,13 +74,22 @@ function main(stream) {
       handleVideoProcessing(callerId, stream);
     });
     peer.on("data", (data) => {
-      console.log(data);
       if (data.toString() === "started-streaming") {
         handleStartedStreaming();
       }
     });
+    peer.on("connect", () => {
+      if (currentlyStreaming && currentlyAdmin) {
+        const localVideo = getLocalVideo();
+        const stream = localVideo.captureStream();
+        replaceStreamTracks(peer, stream);
+        peer.send("started-streaming");
+      }
+    });
 
-    if (!currentlyAdmin) peer.removeStream(dummyStream);
+    if (!currentlyAdmin) {
+      peer.removeStream(secondStream);
+    }
 
     //Signal back - accept the offer
     peer.signal(incomingSignal);
@@ -91,11 +100,11 @@ function main(stream) {
   //myId = socket id of current user
   //stream = mediastream of current user
   function createPeer(userToSignal, myId, stream) {
-    const dummyStream = stream.clone();
+    const secondStream = stream.clone();
     const peer = new SimplePeer({
       initiator: true,
       trickle: true,
-      streams: [stream, dummyStream],
+      streams: [stream, secondStream],
       objectMode: true,
     });
 
@@ -111,12 +120,13 @@ function main(stream) {
     });
 
     peer.on("data", (data) => {
-      console.log(data);
-      if(data.toString()==="started-streaming"){
-        handleStartedStreaming()
+      if (data.toString() === "started-streaming") {
+        handleStartedStreaming();
       }
     });
-    if (!currentlyAdmin) peer.removeStream(dummyStream);
+    if (!currentlyAdmin) {
+      peer.removeStream(secondStream);
+    }
 
     return peer;
   }
@@ -133,26 +143,11 @@ async function addVideoStream(stream, video) {
     video.src = window.URL.createObjectURL(stream);
   }
   videoGrid.append(video);
-  const playPromise = video.play();
-
-  // In browsers that don’t yet support this functionality,
-  // playPromise won’t be defined.
-  if (playPromise !== undefined) {
-    playPromise
-      .then(function () {
-        // Automatic playback started!
-      })
-      .catch(function (error) {
-        console.error(error);
-        // Automatic playback failed.
-        // Show a UI element to let the user manually start playback.
-      });
-  }
+  video.play();
 }
 
 function handleVideoProcessing(videoId, stream) {
   if (!document.getElementById(videoId)) {
-    console.log(stream);
     const video = document.createElement("video");
     video.id = videoId;
     addVideoStream(stream, video);
@@ -161,9 +156,11 @@ function handleVideoProcessing(videoId, stream) {
   }
 }
 
-function handleStartedStreaming(){
-      const video = document.createElement("video");
-      //Check in case of old browser
-      video.id = adminVideoStream.videoId + "-admin";
-      addVideoStream(adminVideoStream.stream, video);
+function handleStartedStreaming() {
+  const querySelector = "#" + adminVideoStream.videoId + "-admin";
+  if (!document.querySelector(querySelector)) {
+    const video = document.createElement("video");
+    video.id = adminVideoStream.videoId + "-admin";
+    addVideoStream(adminVideoStream.stream, video);
+  }
 }

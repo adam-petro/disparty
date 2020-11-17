@@ -36,32 +36,17 @@ function localFileVideoPlayer() {
   inputNode.addEventListener("change", playSelectedFile, false);
 }
 
-function handleVideoStreaming() {
+async function handleVideoStreaming() {
   let localVideoInput = document.querySelector("#video-input");
-  localVideoInput.addEventListener("added-video", () => {
-    localVideo = document.querySelector("#local-video");
-    localVideo.addEventListener("loadedmetadata", async () => {
-      stream = localVideo.captureStream();
-      await myPeers.forEach((peer) => {
-        //Replace video mediatrack
-        console.log(peer["peer"].streams[1].getTracks());
-        console.log(stream.getTracks());
-        peer["peer"].replaceTrack(
-          peer["peer"].streams[1].getTracks()[1],
-          stream.getTracks()[1],
-          peer["peer"].streams[1]
-        );
-
-        //Replace AudioMediatrack
-        peer["peer"].replaceTrack(
-          peer["peer"].streams[1].getTracks()[0],
-          stream.getTracks()[0],
-          peer["peer"].streams[1]
-        );
-
+  localVideoInput.addEventListener("added-video", async () => {
+    const localVideo = getLocalVideo();
+    localVideo.addEventListener("loadedmetadata", () => {
+      const stream = localVideo.captureStream();
+      myPeers.forEach((peer) => {
+        replaceStreamTracks(peer["peer"], stream);
         peer["peer"].send("started-streaming");
       });
-      // socket.emit("added-video", ROOM_ID);
+      currentlyStreaming = true;
     });
   });
 }
@@ -70,4 +55,24 @@ async function handleVideoPlayback() {
   await mountComponents();
   localFileVideoPlayer();
   handleVideoStreaming();
+}
+
+function getLocalVideo() {
+  localVideo = document.querySelector("#local-video");
+  return localVideo;
+}
+
+function replaceStreamTracks(peer, stream) {
+  peer.replaceTrack(
+    peer.streams[1].getTracks()[1],
+    stream.getTracks()[1],
+    peer.streams[1]
+  );
+
+  //Replace AudioMediatrack
+  peer.replaceTrack(
+    peer.streams[1].getTracks()[0],
+    stream.getTracks()[0],
+    peer.streams[1]
+  );
 }
