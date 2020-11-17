@@ -44,7 +44,12 @@ async function handleVideoStreaming() {
       const stream = localVideo.captureStream();
       myPeers.forEach((peer) => {
         replaceStreamTracks(peer["peer"], stream);
-        peer["peer"].send("started-streaming");
+        const message = {
+          type: "notification",
+          data: "started-streaming",
+          sender: socket.id,
+        };
+        peer["peer"].send(JSON.stringify(message));
       });
       currentlyStreaming = true;
     });

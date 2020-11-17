@@ -74,8 +74,9 @@ function main(stream) {
       handleVideoProcessing(callerId, stream);
     });
     peer.on("data", (data) => {
-      if (data.toString() === "started-streaming") {
-        handleStartedStreaming();
+      data = JSON.parse(data);
+      if (data["type"] === "message") {
+        receiveMessage(data);
       }
     });
     peer.on("connect", () => {
@@ -83,7 +84,12 @@ function main(stream) {
         const localVideo = getLocalVideo();
         const stream = localVideo.captureStream();
         replaceStreamTracks(peer, stream);
-        peer.send("started-streaming");
+        const message = {
+          type: "notification",
+          data: "started-streaming",
+          sender: socket.id,
+        };
+        peer.send(JSON.stringify(message));
       }
     });
 
@@ -120,8 +126,14 @@ function main(stream) {
     });
 
     peer.on("data", (data) => {
-      if (data.toString() === "started-streaming") {
+      data = JSON.parse(data);
+      if (
+        data["type"] === "notification" &&
+        data["data"] === "started-streaming"
+      ) {
         handleStartedStreaming();
+      } else if (data["type"] === "message") {
+        receiveMessage(data);
       }
     });
     if (!currentlyAdmin) {
@@ -133,6 +145,7 @@ function main(stream) {
   socket.on("user-disconnected", (userId) => {
     document.getElementById(userId).remove();
     delete myPeers[userId];
+    removeChatWindow(userId);
   });
 }
 async function addVideoStream(stream, video) {
