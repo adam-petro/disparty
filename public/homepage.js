@@ -5,5 +5,8 @@ pasteButton.addEventListener("click", function (event) {
   navigator.clipboard.readText().then((text) => (inputField.value = text));
 });
 
-const myStorage = window.localStorage;
+const myStorage = window.sessionStorage;
 const nicknamefield = $("#nickname");
+nicknamefield.change(() => {
+  myStorage.setItem("nickname", nicknamefield.val());
+});
