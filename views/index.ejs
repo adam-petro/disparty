@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="/homepage.js" defer></script>
     <link
       rel="stylesheet"
       type="text/css"
@@ -15,7 +16,9 @@
 
   <body>
     <header>
-      <h1 class="ui center aligned header">DISPARTY</h1>
+      <h1 class="ui center aligned header">
+        <span class="ui huge text">DISPARTY</span>
+      </h1>
     </header>
     <div class="container">
       <div class="ui padded row placeholder container segment">
@@ -83,32 +86,16 @@
         </div>
       </div>
       <div class="ui container">
-        <h3 class="ui top attached header">What is disparty?</h3>
+        <h2 class="ui top attached header">What is disparty?</h2>
         <div class="ui attached segment">
-          <p>
-            Disparty is a decentralized, peer to peer communication platform. It
-            offers streaming
-          </p>
+          <span class="ui large text"
+            ><p>
+              Disparty is a decentralized, peer to peer communication platform.
+              It offers streaming
+            </p>
+          </span>
         </div>
       </div>
     </div>
   </body>
-  <script>
-    // const joinButton = $("#join-room-btn").click(() => {
-    //   window.location.replace(
-    //     window.location + "join-room/room-id=" + $("#room-id").val()
-    //   );
-    // });
-    // $("#room-id").change((e) => {
-    //   console.log($("#room-id").val());
-    // });
-    // Helper function to paste from clipboard to textfield - for developing purposes only.
-    const pasteButton = document.querySelector("#paste-button");
-    pasteButton.addEventListener("click", function (event) {
-      const inputField = document.getElementById("join-form").elements[
-        "room-id"
-      ];
-      navigator.clipboard.readText().then((text) => (inputField.value = text));
-    });
-  </script>
 </html>
