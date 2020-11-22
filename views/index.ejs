@@ -17,54 +17,78 @@
     <header>
       <h1 class="ui center aligned header">DISPARTY</h1>
     </header>
-    <div class="ui placeholder segment">
-      <div class="ui two column stackable center aligned grid">
-        <div class="middle aligned row">
-          <div class="column">
-            <div class="ui icon header">
-              <i class="door open icon"></i>
-              Join existing room
-            </div>
-            <form class="ui form" id="join-form" action="/join-room">
-              <div class="field">
-                <div class="ui action input">
-                  <input
-                    type="text"
-                    name="room-id"
-                    placeholder="Enter room Id"
-                  />
+    <div class="container">
+      <div class="ui padded row placeholder container segment">
+        <div class="ui center aligned container">
+          <h2 style="margin: 30px 0" class="ui center aligned header">
+             First enter your nickname
+          </h2>
+          <div class="ui input">
+            <input id="nickname" placeholder="nickame" />
+          </div>
+        </div>
+        <div class="ui center aligned container">
+          <h2 style="margin: 30px 0" class="ui center aligned header">
+            And then choose to join an existing room or create a new one
+          </h2>
+        </div>
+        <div class="ui two column stackable center aligned grid">
+          <div class="middle aligned row">
+            <div class="column">
+              <div class="ui icon header">
+                <i class="door open icon"></i>
+                Join existing room
+              </div>
+              <form class="ui form" id="join-form" action="/join-room">
+                <div class="field">
+                  <div class="ui action input">
+                    <input
+                      type="text"
+                      name="room-id"
+                      placeholder="Enter room Id"
+                    />
+                    <button
+                      class="ui icon button"
+                      type="button"
+                      id="paste-button"
+                    >
+                      <i class="paste icon"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="field">
                   <button
-                    class="ui icon button"
-                    type="button"
-                    id="paste-button"
+                    id="join-room-btn"
+                    type="submit"
+                    form="join-form"
+                    class="ui primary button"
                   >
-                    <i class="paste icon"></i>
+                    Join room
                   </button>
                 </div>
+              </form>
+            </div>
+            <div class="column">
+              <div class="ui icon header">
+                <i class="plus circle icon"></i>
+                Create a new room
               </div>
               <div class="field">
-                <button
-                  id="join-room-btn"
-                  type="submit"
-                  form="join-form"
-                  class="ui primary button"
+                <a href="/new-room">
+                  <div class="ui primary button">Create</div></a
                 >
-                  Join room
-                </button>
               </div>
-            </form>
-          </div>
-          <div class="column">
-            <div class="ui icon header">
-              <i class="plus circle icon"></i>
-              Create a new room
-            </div>
-            <div class="field">
-              <a href="/new-room">
-                <div class="ui primary button">Create</div></a
-              >
             </div>
           </div>
+        </div>
+      </div>
+      <div class="ui container">
+        <h3 class="ui top attached header">What is disparty?</h3>
+        <div class="ui attached segment">
+          <p>
+            Disparty is a decentralized, peer to peer communication platform. It
+            offers streaming
+          </p>
         </div>
       </div>
     </div>
