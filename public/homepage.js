@@ -10,3 +10,16 @@ const nicknamefield = $("#nickname");
 nicknamefield.change(() => {
   myStorage.setItem("nickname", nicknamefield.val());
 });
+
+function validateField(field) {
+  field.parentElement.className =
+    field.parentElement.className + " field error";
+}
+
+function makeRoomIdRequired() {
+  $("#room-id").attr("required", "");
+}
+
+function makeRoomIdNotRequired() {
+  $("#room-id").removeAttr("required");
+}
