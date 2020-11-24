@@ -5,17 +5,20 @@ pasteButton.addEventListener("click", function (event) {
   navigator.clipboard.readText().then((text) => (inputField.value = text));
 });
 
+//Function to save the nickname to session storage.
 const myStorage = window.sessionStorage;
 const nicknamefield = $("#nickname");
 nicknamefield.change(() => {
   myStorage.setItem("nickname", nicknamefield.val());
 });
 
+//Function to set the field class to invalid and change the styling of field if invalid
 function validateField(field) {
   field.parentElement.className =
     field.parentElement.className + " field error";
 }
 
+//Helper functions. If user clicks 'join room', room id should be a required field. otherwise it shouldn't.
 function makeRoomIdRequired() {
   $("#room-id").attr("required", "");
 }

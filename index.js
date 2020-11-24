@@ -40,22 +40,26 @@ app.get("/room/:roomId", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", (roomId, nickname) => {
     if (users[roomId]) {
-      users[roomId].push(socket.id);
+      users[roomId].push({ socketId: socket.id, nickname: nickname });
     } else {
-      users[roomId] = [socket.id];
+      users[roomId] = [{ socketId: socket.id, nickname: nickname }];
     }
     socketToRoom[socket.id] = roomId;
-    const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
+    const usersInThisRoom = users[roomId].filter(
+      (user) => user.socketId !== socket.id
+    );
 
     socket.emit("all-users", usersInThisRoom);
   });
 
   socket.on("added-video", (roomId) => {
-    const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
+    const usersInThisRoom = users[roomId].filter(
+      (user) => user.socketId !== socket.id
+    );
     usersInThisRoom.forEach((user) => {
-      io.to(user).emit("added-video");
+      io.to(user.socketId).emit("added-video");
     });
   });
 
@@ -63,6 +67,7 @@ io.on("connection", (socket) => {
     io.to(payload.userToSignal).emit("user-joined", {
       signal: payload.signal,
       callerId: payload.callerId,
+      nickname: payload.nickname,
     });
   });
 
@@ -70,6 +75,7 @@ io.on("connection", (socket) => {
     io.to(payload.callerId).emit("received-returned-signal", {
       signal: payload.signal,
       id: socket.id,
+      nickname: payload.nickname,
     });
   });
 
@@ -77,14 +83,16 @@ io.on("connection", (socket) => {
     const roomId = socketToRoom[socket.id];
     let room = users[roomId];
     if (room) {
-      room = room.filter((id) => id !== socket.id);
+      room = room.filter((user) => user.socketId !== socket.id);
       users[roomId] = room;
     }
     delete socketToRoom[socket.id];
     if (users[roomId]) {
-      const usersInThisRoom = users[roomId].filter((id) => id !== socket.id);
+      const usersInThisRoom = users[roomId].filter(
+        (user) => user.socketId !== socket.id
+      );
       usersInThisRoom.forEach((user) => {
-        socket.to(user).emit("user-disconnected", socket.id);
+        socket.to(user.socketId).emit("user-disconnected", socket.id);
       });
     }
   });

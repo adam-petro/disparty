@@ -71,15 +71,20 @@ function main(stream) {
       socket.emit("return-signal", { signal, callerId });
     });
 
+    //On received stream, handle the video
     peer.on("stream", (stream) => {
       handleVideoProcessing(callerId, stream);
     });
+
+    //on data, distinguish if message and handle accordingly
     peer.on("data", (data) => {
       data = JSON.parse(data);
       if (data["type"] === "message" || data["type"] === "group-message") {
         receiveMessage(data);
       }
     });
+
+    //if currently streaming local video, let newly connected user know.
     peer.on("connect", () => {
       if (currentlyStreaming && currentlyAdmin) {
         const localVideo = getLocalVideo();
@@ -94,6 +99,7 @@ function main(stream) {
       }
     });
 
+    //if not currently admin, remove the second stream
     if (!currentlyAdmin) {
       peer.removeStream(secondStream);
     }
@@ -147,19 +153,24 @@ function main(stream) {
     return peer;
   }
   socket.on("user-disconnected", (userId) => {
-    document.getElementById(userId).remove();
-    delete myPeers[userId];
-    myPeers.splice(
-      myPeers.indexOf(
-        myPeers.find((p) => {
-          return p.peerId === userId;
-        })
-      ),
-      1
-    );
-    removeChatWindow(userId);
+    removeUser(userId);
   });
 }
+
+function removeUser(userId) {
+  document.getElementById(userId).remove();
+  delete myPeers[userId];
+  myPeers.splice(
+    myPeers.indexOf(
+      myPeers.find((p) => {
+        return p.peerId === userId;
+      })
+    ),
+    1
+  );
+  removeChatWindow(userId);
+}
+
 async function addVideoStream(stream, video) {
   //Check in case of old browser
   if ("srcObject" in video) {

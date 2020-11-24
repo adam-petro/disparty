@@ -38,10 +38,15 @@ function localFileVideoPlayer() {
 
 async function handleVideoStreaming() {
   let localVideoInput = document.querySelector("#video-input");
+
+  //On video added, run following
   localVideoInput.addEventListener("added-video", async () => {
     const localVideo = getLocalVideo();
+    //On loaded metadata of the video
     localVideo.addEventListener("loadedmetadata", () => {
+      //Capture the videostream
       const stream = localVideo.captureStream();
+      //For each of my peers, replace their tracks and notify them that I started stream
       myPeers.forEach((peer) => {
         replaceStreamTracks(peer["peer"], stream);
         const message = {
@@ -51,6 +56,7 @@ async function handleVideoStreaming() {
         };
         peer["peer"].send(JSON.stringify(message));
       });
+      //Set state variable currentlyStreaming to true
       currentlyStreaming = true;
     });
   });
@@ -68,6 +74,7 @@ function getLocalVideo() {
 }
 
 function replaceStreamTracks(peer, stream) {
+  //Replace VideoMediaTrack
   peer.replaceTrack(
     peer.streams[1].getTracks()[1],
     stream.getTracks()[1],
