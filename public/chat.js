@@ -3,12 +3,14 @@ function renderChat(newPeer) {
 }
 
 //Finish the functions
-function openChatWindow(type, receivers) {
+function openChatWindow(type, receiver) {
   let id;
   if (type === "group") {
     id = "everyone";
+    nickname = "everyone";
   } else {
-    id = receivers.peerId;
+    id = receiver.peerId;
+    nickname = receiver.nickname;
   }
   const chatWindow = $(
     `<div class="${id} chat-window" id=${id}-chat-window>
@@ -19,11 +21,11 @@ function openChatWindow(type, receivers) {
     </div>`
   );
   const sendMessageButton = $(
-    `<button id="${id}-send-message-button">Send message to ${id}</button>`
+    `<button id="${id}-send-message-button">Send message to ${nickname}</button>`
   );
   sendMessageButton.click(() => {
     if (type === "group") sendGroupMessage();
-    else sendMessage(receivers);
+    else sendMessage(receiver);
   });
   chatWindow.append(sendMessageButton);
   $("section").append(chatWindow);
@@ -58,7 +60,9 @@ function sendMessage(receiver) {
   const chatMessages = $(`#${receiver.peerId}-chat-messages`);
   chatMessages.append(
     $(
-      `<p class="send chat-message"><b>${message.sender}</b>:${message.data}<p>`
+      `<p class="send chat-message"><b>${sessionStorage.getItem(
+        "nickname"
+      )}</b>:${message.data}<p>`
     )
   );
 }
@@ -67,14 +71,16 @@ function receiveMessage(message) {
   let chatMessagesId;
   if (message.type === "group-message") {
     chatMessagesId = "#everyone-chat-messages";
+    nickname = "everyone";
   } else {
     chatMessagesId = `#${message.sender}-chat-messages`;
+    nickname = myPeers.find((peer) => {
+      return peer.peerId == message.sender;
+    }).nickname;
   }
   const chatMessages = $(chatMessagesId);
   chatMessages.append(
-    $(
-      `<p class="receive chat-message"><b>${message.sender}</b>:${message.data}<p>`
-    )
+    $(`<p class="receive chat-message"><b>${nickname}</b>:${message.data}<p>`)
   );
 }
 

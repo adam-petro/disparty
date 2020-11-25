@@ -23,7 +23,7 @@ function main(stream) {
   myId = socket.id;
   openChatWindow("group", myPeers);
   //On join, tell the server that you joined
-  socket.emit("join-room", ROOM_ID);
+  socket.emit("join-room", ROOM_ID, sessionStorage.getItem("nickname"));
 
   //When received info on all users already in a room
   socket.on("all-users", (users) => {
@@ -31,11 +31,21 @@ function main(stream) {
       currentlyAdmin = true;
       handleVideoPlayback();
     }
-    users.forEach((userId) => {
+    console.log(users);
+    users.forEach((user) => {
       //Create a new p2p connection for each of the users already in room
-      const peer = createPeer(userId, socket.id, stream);
+      const peer = createPeer(user.userId, socket.id, stream);
+      console.log({
+        peerId: user.userId,
+        peer: peer,
+        nickname: user.nickname,
+      });
       //Push into the array of current user's peers
-      myPeers.push({ peerId: userId, peer });
+      myPeers.push({
+        peerId: user.userId,
+        peer: peer,
+        nickname: user.nickname,
+      });
     });
   });
 
@@ -48,7 +58,8 @@ function main(stream) {
       const peer = addPeer(payload.signal, payload.callerId, stream);
       myPeers.push({
         peerId: payload.callerId,
-        peer,
+        peer: peer,
+        nickname: payload.nickname,
       });
     }
   });
@@ -125,7 +136,12 @@ function main(stream) {
     //The signal event is going to fire instantly, because current user is initiator.
     //Tell the server that we are trying to signal userToSignal and that myId is our address
     peer.on("signal", (signal) => {
-      socket.emit("sending-signal", { userToSignal, callerId: myId, signal });
+      socket.emit("sending-signal", {
+        userToSignal,
+        callerId: myId,
+        signal: signal,
+        nickname: sessionStorage.getItem("nickname"),
+      });
     });
 
     //When a stream is received, process it

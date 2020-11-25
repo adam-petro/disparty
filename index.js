@@ -41,14 +41,15 @@ app.get("/room/:roomId", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.on("join-room", (roomId, nickname) => {
+    console.log(nickname);
     if (users[roomId]) {
-      users[roomId].push({ socketId: socket.id, nickname: nickname });
+      users[roomId].push({ userId: socket.id, nickname: nickname });
     } else {
-      users[roomId] = [{ socketId: socket.id, nickname: nickname }];
+      users[roomId] = [{ userId: socket.id, nickname: nickname }];
     }
     socketToRoom[socket.id] = roomId;
     const usersInThisRoom = users[roomId].filter(
-      (user) => user.socketId !== socket.id
+      (user) => user.userId !== socket.id
     );
 
     socket.emit("all-users", usersInThisRoom);
@@ -56,10 +57,10 @@ io.on("connection", (socket) => {
 
   socket.on("added-video", (roomId) => {
     const usersInThisRoom = users[roomId].filter(
-      (user) => user.socketId !== socket.id
+      (user) => user.userId !== socket.id
     );
     usersInThisRoom.forEach((user) => {
-      io.to(user.socketId).emit("added-video");
+      io.to(user.userId).emit("added-video");
     });
   });
 
@@ -83,16 +84,16 @@ io.on("connection", (socket) => {
     const roomId = socketToRoom[socket.id];
     let room = users[roomId];
     if (room) {
-      room = room.filter((user) => user.socketId !== socket.id);
+      room = room.filter((user) => user.userId !== socket.id);
       users[roomId] = room;
     }
     delete socketToRoom[socket.id];
     if (users[roomId]) {
       const usersInThisRoom = users[roomId].filter(
-        (user) => user.socketId !== socket.id
+        (user) => user.userId !== socket.id
       );
       usersInThisRoom.forEach((user) => {
-        socket.to(user.socketId).emit("user-disconnected", socket.id);
+        socket.to(user.userId).emit("user-disconnected", socket.id);
       });
     }
   });
