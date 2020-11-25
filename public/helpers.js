@@ -31,7 +31,7 @@ function displayPromptWhenNicknameNotPresent() {
 function saveNickname() {
   return new Promise((resolve, reject) => {
     const nicknameInput = $("#nickname-input");
-    if (nicknameInput.val().length === 0) {
+    if (nicknameInput.val().length < 3) {
       nicknameInput.parent().addClass(" field error");
     } else {
       sessionStorage.setItem("nickname", nicknameInput.val());
