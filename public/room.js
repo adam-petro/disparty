@@ -7,16 +7,17 @@ let myId;
 const videoGrid = document.getElementById("video-grid");
 const myVideo = document.createElement("video");
 myVideo.muted = true;
-
-navigator.mediaDevices
-  .getUserMedia({
-    video: true,
-    audio: true,
-  })
-  .then((stream) => {
-    addVideoStream(stream, myVideo);
-    main(stream);
-  });
+displayPromptWhenNicknameNotPresent().then(() => {
+  navigator.mediaDevices
+    .getUserMedia({
+      video: true,
+      audio: true,
+    })
+    .then((stream) => {
+      addVideoStream(stream, myVideo);
+      main(stream);
+    });
+});
 
 function main(stream) {
   myId = socket.id;

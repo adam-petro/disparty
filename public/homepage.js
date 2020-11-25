@@ -25,4 +25,5 @@ function makeRoomIdRequired() {
 
 function makeRoomIdNotRequired() {
   $("#room-id").removeAttr("required");
+  $("#room-id").removeAttr("minlength");
 }

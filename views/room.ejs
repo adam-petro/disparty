@@ -14,18 +14,25 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.7.2/simplepeer.min.js"
       defer
     ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
     <script>
       ROOM_ID = "<%- roomId %>";
     </script>
     <script src="/socket.io/socket.io.js" defer></script>
+    <script src="/helpers.js" defer></script>
     <script src="/room.js" defer></script>
     <script src="/videoPlaybackHandle.js" defer></script>
-    <script src="/helpers.js" defer></script>
     <script src="/dataStructures.js" defer></script>
     <script src="/chat.js" defer></script>
   </head>
 
   <body>
+    <%- include ('partials/modal.ejs') %>
     <header>
       <h1>Welcome to room <i><%= roomId %></i></h1>
     </header>
