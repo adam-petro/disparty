@@ -2,11 +2,9 @@ const socket = io.connect("/");
 let currentlyAdmin = false;
 let currentlyStreaming = false;
 let adminVideoStream;
-let myId;
+let myId = socket.id;
 
 const videoGrid = document.getElementById("video-grid");
-const myVideo = document.createElement("video");
-myVideo.muted = true;
 displayPromptWhenNicknameNotPresent().then(() => {
   navigator.mediaDevices
     .getUserMedia({
@@ -14,7 +12,7 @@ displayPromptWhenNicknameNotPresent().then(() => {
       audio: true,
     })
     .then((stream) => {
-      addVideoStream(stream, myVideo);
+      addVideoStream(stream, "my-webcam", sessionStorage.getItem("nickname"));
       main(stream);
     });
 });
@@ -31,15 +29,10 @@ function main(stream) {
       currentlyAdmin = true;
       handleVideoPlayback();
     }
-    console.log(users);
     users.forEach((user) => {
       //Create a new p2p connection for each of the users already in room
       const peer = createPeer(user.userId, socket.id, stream);
-      console.log({
-        peerId: user.userId,
-        peer: peer,
-        nickname: user.nickname,
-      });
+
       //Push into the array of current user's peers
       myPeers.push({
         peerId: user.userId,
@@ -175,7 +168,9 @@ function main(stream) {
 }
 
 function removeUser(userId) {
-  document.getElementById(userId).remove();
+  //Remove the videocard
+  document.getElementById(userId + "-videocard").remove();
+  //Remove the peer from remaining structures
   delete myPeers[userId];
   myPeers.splice(
     myPeers.indexOf(
@@ -185,25 +180,49 @@ function removeUser(userId) {
     ),
     1
   );
+
+  //Remove the chatWindow
   removeChatWindow(userId);
 }
 
-async function addVideoStream(stream, video) {
+async function addVideoStream(stream, peerId, nickname) {
+  //Create new html element
+  const video = document.createElement("video");
+  //Set the id of the video to the peer streaming the stream that displays in the video
+  video.id = peerId;
+  //If my video, mute it for me.
+  if (peerId === "my-webcam") video.muted = true;
   //Check in case of old browser
   if ("srcObject" in video) {
     video.srcObject = stream;
   } else {
     video.src = window.URL.createObjectURL(stream);
   }
-  videoGrid.append(video);
+  //Create couple of elements for prettier styles
+  const videoCard = $(
+    `<div style="margin:10px auto 10px;"id=${peerId}-videocard class="ui centered card"></div>`
+  );
+  const videoCardVideo = $(`<div class="ui image"></div>`);
+  const videoCardContent = $(
+    `<div class="content"><p class="header">${nickname}</p></div>`
+  );
+
+  //Append the jquery version of the html element video
+  videoCardVideo.append($(video));
+  //Append rest of the stuff
+  videoCard.append(videoCardVideo);
+  videoCard.append(videoCardContent);
+  $(videoGrid).append(videoCard);
+  //Play appended video
   video.play();
 }
 
-function handleVideoProcessing(videoId, stream) {
-  if (!document.getElementById(videoId)) {
-    const video = document.createElement("video");
-    video.id = videoId;
-    addVideoStream(stream, video);
+function handleVideoProcessing(peerId, stream) {
+  if (!document.getElementById(peerId)) {
+    const peer = myPeers.find((peer) => {
+      return peer.peerId === peerId;
+    });
+    addVideoStream(stream, peerId, peer.nickname);
   } else {
     adminVideoStream = { videoId, stream };
   }
