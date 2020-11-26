@@ -224,7 +224,7 @@ function handleVideoProcessing(peerId, stream) {
     });
     addVideoStream(stream, peerId, peer.nickname);
   } else {
-    adminVideoStream = { videoId, stream };
+    adminVideoStream = { peerId, stream };
   }
 }
 
