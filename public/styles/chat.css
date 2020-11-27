@@ -1,0 +1,8 @@
+.chat-feed {
+  overflow: auto;
+  height: 250px;
+}
+
+.message-input {
+  width: 100%;
+}

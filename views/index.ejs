@@ -11,7 +11,7 @@
       href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
-    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
     <title>Disparty-peer to peer video streaming service</title>
   </head>
 
@@ -20,6 +20,7 @@
       <h1 style="font-size: 200%">DISPARTY</h1>
     </header>
     <div class="container">
+      <%- include ('partials/chat.ejs') %>
       <div class="ui padded row placeholder container segment">
         <form class="ui form" id="join-form" action="/join-room">
           <div class="ui center aligned container">

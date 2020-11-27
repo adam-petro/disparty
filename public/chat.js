@@ -12,23 +12,16 @@ function openChatWindow(type, receiver) {
     id = receiver.peerId;
     nickname = receiver.nickname;
   }
-  const chatWindow = $(
-    `<div class="${id} chat-window" id=${id}-chat-window>
-    <div class="chat-messages" id=${id}-chat-messages>
-    </div>
-    <div class="chat-controls"><input type=\"text\" id=\"${id}-message-input\"/>
-    </div>
-    </div>`
-  );
-  const sendMessageButton = $(
-    `<button id="${id}-send-message-button">Send message to ${nickname}</button>`
-  );
-  sendMessageButton.click(() => {
+
+  $(`section`).append(chatWindow(id, nickname));
+
+  const sendMessageButton = $(`#${id}-send-message-button`);
+  console.log(sendMessageButton);
+  sendMessageButton.on("click", () => {
+    console.log("hm");
     if (type === "group") sendGroupMessage();
     else sendMessage(receiver);
   });
-  chatWindow.append(sendMessageButton);
-  $("section").append(chatWindow);
 }
 
 function sendGroupMessage() {
@@ -44,9 +37,7 @@ function sendGroupMessage() {
 
   const chatMessages = $(`#everyone-chat-messages`);
   chatMessages.append(
-    $(
-      `<p class="send chat-message"><b>${message.sender}</b>:${message.data}<p>`
-    )
+    chatMessage(message.data, sessionStorage.getItem("nickname"))
   );
 }
 
@@ -59,11 +50,7 @@ function sendMessage(receiver) {
   receiver["peer"].send(JSON.stringify(message));
   const chatMessages = $(`#${receiver.peerId}-chat-messages`);
   chatMessages.append(
-    $(
-      `<p class="send chat-message"><b>${sessionStorage.getItem(
-        "nickname"
-      )}</b>:${message.data}<p>`
-    )
+    chatMessage(message.data, sessionStorage.getItem("nickname"))
   );
 }
 
@@ -71,17 +58,14 @@ function receiveMessage(message) {
   let chatMessagesId;
   if (message.type === "group-message") {
     chatMessagesId = "#everyone-chat-messages";
-    nickname = "everyone";
   } else {
     chatMessagesId = `#${message.sender}-chat-messages`;
-    nickname = myPeers.find((peer) => {
-      return peer.peerId == message.sender;
-    }).nickname;
   }
+  nickname = myPeers.find((peer) => {
+    return peer.peerId == message.sender;
+  }).nickname;
   const chatMessages = $(chatMessagesId);
-  chatMessages.append(
-    $(`<p class="receive chat-message"><b>${nickname}</b>:${message.data}<p>`)
-  );
+  chatMessages.append(chatMessage(message.data, nickname));
 }
 
 function removeChatWindow(peerId) {

@@ -40,6 +40,7 @@ app.get("/room/:roomId", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  console.log(socket.id);
   socket.on("join-room", (roomId, nickname) => {
     if (users[roomId]) {
       users[roomId].push({ userId: socket.id, nickname: nickname });
