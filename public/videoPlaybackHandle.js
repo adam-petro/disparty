@@ -43,7 +43,7 @@ async function handleVideoStreaming() {
   localVideoInput.addEventListener("added-video", async () => {
     const localVideo = getLocalVideo();
     //On loaded metadata of the video
-    localVideo.addEventListener("loadedmetadata", () => {
+    function addAndNotify() {
       //Capture the videostream
       const stream = localVideo.captureStream();
       //For each of my peers, replace their tracks and notify them that I started stream
@@ -58,6 +58,13 @@ async function handleVideoStreaming() {
       });
       //Set state variable currentlyStreaming to true
       currentlyStreaming = true;
+    }
+    localVideo.addEventListener("loadedmetadata", addAndNotify);
+    localVideo.addEventListener("pause", () => {
+      localVideo.removeEventListener("play", addAndNotify);
+    });
+    localVideo.addEventListener("ended", () => {
+      localVideo.addEventListener("play", addAndNotify);
     });
   });
 }

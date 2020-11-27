@@ -224,15 +224,20 @@ function handleVideoProcessing(peerId, stream) {
     });
     addVideoStream(stream, peerId, peer.nickname);
   } else {
-    adminVideoStream = { peerId, stream };
+    adminVideoStream = { videoId: peerId + "-admin", stream };
   }
 }
 
 function handleStartedStreaming() {
-  const querySelector = "#" + adminVideoStream.videoId + "-admin";
+  const querySelector = "#" + adminVideoStream.videoId;
   if (!document.querySelector(querySelector)) {
-    const video = document.createElement("video");
-    video.id = adminVideoStream.videoId + "-admin";
-    addVideoStream(adminVideoStream.stream, video);
+    addVideoStream(
+      adminVideoStream.stream,
+      adminVideoStream.videoId,
+      "Local stream from Admin"
+    );
+  } else {
+    console.log("video playing");
+    document.querySelector(querySelector).play();
   }
 }
