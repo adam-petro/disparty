@@ -1,3 +1,6 @@
+body {
+  color: pink;
+}
 .chat-feed {
   overflow: auto;
   height: 250px;
@@ -5,4 +8,9 @@
 
 .message-input {
   width: 100%;
+  color: red;
+}
+
+.ui.card.chat-window.hidden-chat {
+  display: none;
 }

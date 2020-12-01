@@ -1,21 +1,9 @@
 function chatWindow(id, nickname) {
   return $(`
-  <div class="ui card" id=${id}-chat-window>
+  <div class="ui card chat-window hidden-chat" id=${id}-chat-window>
   <div class="content"><div class="header">${nickname}</div></div>
   <div class="content">
     <div class="ui feed chat-feed" id=${id}-chat-messages>
-      <div class="event">
-        <div class="content">
-          <span class="ui blue text"><b>Kuba</b></span>
-          added Elliot Fu to the group
-        </div>
-      </div>
-      <div class="event">
-        <div class="content">
-          <span class="ui blue text"><b>Kuba</b></span>
-          added Elliot Fu to the group
-        </div>
-      </div>
     </div>
   </div>
   <div class="extra content">
@@ -36,4 +24,10 @@ function chatMessage(message, sender) {
           ${message}
         </div>
       </div>`);
+}
+
+function peerLabel(id, nickname) {
+  return $(`<a class="ui label" id=${id}-label>
+        <i class="user circle icon"></i>${nickname}
+      </a>`);
 }

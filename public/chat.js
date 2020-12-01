@@ -1,9 +1,38 @@
 function renderChat(newPeer) {
-  openChatWindow("single", newPeer);
+  createChatWindow("single", newPeer);
 }
 
-//Finish the functions
-function openChatWindow(type, receiver) {
+function renderLabelListOfPeers(id, nickname) {
+  const newLabel = peerLabel(id, nickname);
+  $("section").append(newLabel);
+  newLabel.on("click", () => toggleChatWindow(id));
+}
+
+function removeLabelFromListOfPeers(peerToRemove) {
+  $(`#${peerToRemove.peerId}-label`).remove();
+}
+
+function openChatWindow(chatWindowId) {
+  //Close all other chat windows since only one can be open at a time
+  $(`.ui.card.chat-window`).addClass("hidden-chat");
+
+  $(`#${chatWindowId}-chat-window`).removeClass("hidden-chat");
+}
+
+function toggleChatWindow(chatWindowId) {
+  const chatWindow = $(`#${chatWindowId}-chat-window`);
+  if (chatWindow.hasClass("hidden-chat")) {
+    openChatWindow(chatWindowId);
+  } else if (!chatWindow.hasClass("hidden-chat")) {
+    closeChatWindow(chatWindowId);
+  }
+}
+
+function closeChatWindow(chatWindowId) {
+  $(`#${chatWindowId}-chat-window`).addClass("hidden-chat");
+}
+
+function createChatWindow(type, receiver) {
   let id;
   if (type === "group") {
     id = "everyone";
@@ -12,13 +41,12 @@ function openChatWindow(type, receiver) {
     id = receiver.peerId;
     nickname = receiver.nickname;
   }
-
-  $(`section`).append(chatWindow(id, nickname));
+  renderLabelListOfPeers(id, nickname);
+  const newChatWindow = chatWindow(id, nickname);
+  $(`section`).append(newChatWindow);
 
   const sendMessageButton = $(`#${id}-send-message-button`);
-  console.log(sendMessageButton);
   sendMessageButton.on("click", () => {
-    console.log("hm");
     if (type === "group") sendGroupMessage();
     else sendMessage(receiver);
   });
@@ -57,17 +85,21 @@ function sendMessage(receiver) {
 function receiveMessage(message) {
   let chatMessagesId;
   if (message.type === "group-message") {
-    chatMessagesId = "#everyone-chat-messages";
+    chatMessagesId = "everyone";
   } else {
-    chatMessagesId = `#${message.sender}-chat-messages`;
+    chatMessagesId = message.sender;
   }
   nickname = myPeers.find((peer) => {
     return peer.peerId == message.sender;
   }).nickname;
-  const chatMessages = $(chatMessagesId);
+  const chatMessages = $(`#${chatMessagesId}-chat-messages`);
   chatMessages.append(chatMessage(message.data, nickname));
+  openChatWindow(chatMessagesId);
 }
 
+function logPeerId(peerid) {
+  console.log(peerid);
+}
 function removeChatWindow(peerId) {
   $(`#${peerId}-chat-window`).remove();
 }

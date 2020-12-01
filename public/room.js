@@ -19,7 +19,7 @@ displayPromptWhenNicknameNotPresent().then(() => {
 
 function main(stream) {
   myId = socket.id;
-  openChatWindow("group", myPeers);
+  createChatWindow("group", myPeers);
   //On join, tell the server that you joined
   socket.emit("join-room", ROOM_ID, sessionStorage.getItem("nickname"));
 
@@ -180,9 +180,6 @@ function removeUser(userId) {
     ),
     1
   );
-
-  //Remove the chatWindow
-  removeChatWindow(userId);
 }
 
 async function addVideoStream(stream, peerId, nickname) {
