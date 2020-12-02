@@ -1,4 +1,4 @@
-// Helper function to paste from clipboard to textfield - for developing purposes only.
+//Paste from clipboard to textfield
 const pasteButton = document.querySelector("#paste-button");
 pasteButton.addEventListener("click", function (event) {
   const inputField = document.getElementById("join-form").elements["room-id"];

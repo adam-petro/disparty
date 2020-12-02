@@ -1,4 +1,4 @@
-// Helper function to copy ROOM_ID to clipboard - for developing purposes only.
+//Copy ROOM_ID to clipboard
 const copyButton = document.querySelector("#copy-button");
 copyButton.addEventListener("click", function (event) {
   const dummy = document.createElement("textarea");

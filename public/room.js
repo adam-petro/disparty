@@ -56,7 +56,7 @@ function main(stream) {
       });
     }
   });
-
+  //Receive an answer from the other user
   socket.on("received-returned-signal", (payload) => {
     const item = myPeers.find((p) => p.peerId === payload.id);
     item.peer.signal(payload.signal);
@@ -141,7 +141,7 @@ function main(stream) {
     peer.on("stream", (stream) => {
       handleVideoProcessing(userToSignal, stream);
     });
-
+    //Receive data from other users - notification about status of streaming of local video or a message
     peer.on("data", (data) => {
       data = JSON.parse(data);
       if (
@@ -162,6 +162,7 @@ function main(stream) {
 
     return peer;
   }
+  //Handle other user disconnection
   socket.on("user-disconnected", (userId) => {
     removeUser(userId);
   });

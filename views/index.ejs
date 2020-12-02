@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
     <script src="/homepage.js" defer></script>
     <link
       rel="stylesheet"
@@ -17,14 +16,14 @@
 
   <body>
     <header style="padding-top: 10px" class="ui huge center aligned header">
-      <h1 style="font-size: 200%">DISPARTY</h1>
+      <h1 class="main-caption">DISPARTY</h1>
     </header>
     <div class="container">
       <%- include ('partials/chat.ejs') %>
       <div class="ui padded row placeholder container segment">
         <form class="ui form" id="join-form" action="/join-room">
           <div class="ui center aligned container">
-            <h2 style="margin: 30px 0" class="ui center aligned header">
+            <h2 class="ui center aligned header caption">
                First enter your nickname
             </h2>
             <div class="ui input">
@@ -39,7 +38,7 @@
             </div>
           </div>
           <div class="ui center aligned container">
-            <h2 style="margin: 30px 0" class="ui center aligned header">
+            <h2 class="ui center aligned header caption">
               And then choose to join an existing room or create a new one
             </h2>
           </div>
@@ -193,7 +192,7 @@
               </div>
               <div class="item">
                 <p>
-                  <a href="https://github.com/j-krzyz">Jakub Jan Krzyzynski</a>
+                  <a href="https://github.com/j-krzyz">Jakub Krzyzynski</a>
                 </p>
               </div>
             </div>
@@ -203,3 +202,5 @@
     </div>
   </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    

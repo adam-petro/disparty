@@ -39,7 +39,9 @@ app.get("/room/:roomId", (req, res) => {
   });
 });
 
+//Handle new connection
 io.on("connection", (socket) => {
+  //Create new room or join one if it already exists and notify others about new user
   socket.on("join-room", (roomId, nickname) => {
     if (users[roomId]) {
       users[roomId].push({ userId: socket.id, nickname: nickname });
@@ -53,7 +55,7 @@ io.on("connection", (socket) => {
 
     socket.emit("all-users", usersInThisRoom);
   });
-
+  //Notify new users a new local video has been added
   socket.on("added-video", (roomId) => {
     const usersInThisRoom = users[roomId].filter(
       (user) => user.userId !== socket.id
@@ -62,7 +64,8 @@ io.on("connection", (socket) => {
       io.to(user.userId).emit("added-video");
     });
   });
-
+  //Receive a signal from new user who wants to establish a connection with existing user
+  //Notify existing user about new connection request with an offer
   socket.on("sending-signal", (payload) => {
     io.to(payload.userToSignal).emit("user-joined", {
       signal: payload.signal,
@@ -70,7 +73,7 @@ io.on("connection", (socket) => {
       nickname: payload.nickname,
     });
   });
-
+  //Forward answer from existing user to an user requesting a connection
   socket.on("return-signal", (payload) => {
     io.to(payload.callerId).emit("received-returned-signal", {
       signal: payload.signal,
@@ -78,7 +81,7 @@ io.on("connection", (socket) => {
       nickname: payload.nickname,
     });
   });
-
+  //Handle user disconnection - remove him from server JSON structure and notify other users
   socket.on("disconnect", () => {
     const roomId = socketToRoom[socket.id];
     let room = users[roomId];
