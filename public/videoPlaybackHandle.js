@@ -10,7 +10,7 @@ function mountComponents() {
   const videoPlayer = $('<video controls id="local-video"></video>');
 
   //Append Elements
-  section.prepend(videoContainer);
+  section.append(videoContainer);
   videoContainer.append(inputPrompt);
   videoContainer.append(videoPlayer);
 }

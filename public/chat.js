@@ -4,7 +4,7 @@ function renderChat(newPeer) {
 
 function renderLabelListOfPeers(id, nickname) {
   const newLabel = peerLabel(id, nickname);
-  $("section").append(newLabel);
+  $("#label-container").prepend(newLabel);
   newLabel.on("click", () => toggleChatWindow(id));
 }
 
