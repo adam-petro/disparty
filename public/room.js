@@ -227,8 +227,8 @@ function handleVideoProcessing(peerId, stream) {
 }
 
 function handleStartedStreaming() {
-  const querySelector = "#" + adminVideoStream.videoId;
-  if (!document.querySelector(querySelector)) {
+  const selector = "#" + adminVideoStream.videoId;
+  if (!document.getElementById(selector)) {
     addVideoStream(
       adminVideoStream.stream,
       adminVideoStream.videoId,
