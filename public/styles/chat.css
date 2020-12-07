@@ -1,0 +1,30 @@
+body {
+  color: pink;
+}
+
+.chat-feed {
+  overflow: auto;
+  height: 250px;
+}
+
+.message-input {
+  width: 100%;
+  color: red;
+}
+
+.ui.card.chat-window.hidden-chat {
+  display: none;
+}
+
+.ui.card.chat-window {
+  position: fixed;
+  right: 15px;
+  bottom: 0;
+  z-index: 1000000;
+}
+
+#label-container {
+  display: flex;
+  flex-direction: row;
+  margin: 5px;
+}

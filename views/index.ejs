@@ -1,43 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/homepage.js" defer></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+    <link rel="stylesheet" href="/styles/index.css" />
+    <title>Disparty-peer to peer video streaming service</title>
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DISPARTY</title>
-</head>
-
-<body>
-
-    <header>
-        <h1>DISPARTY</h1>
+  <body>
+    <header style="padding-top: 10px" class="ui huge center aligned header">
+      <h1 class="main-caption">DISPARTY</h1>
     </header>
+    <div class="container">
+      <%- include ('partials/chat.ejs') %>
+      <div class="ui padded row placeholder container segment">
+        <form class="ui form" id="join-form" action="/join-room">
+          <div class="ui center aligned container">
+            <h2 class="ui center aligned header caption">
+               First enter your nickname
+            </h2>
+            <div class="ui input">
+              <input
+                id="nickname"
+                required
+                type="text"
+                minlength="3"
+                oninvalid="validateField(this)"
+                placeholder="nickname"
+              />
+            </div>
+          </div>
+          <div class="ui center aligned container">
+            <h2 class="ui center aligned header caption">
+              And then choose to join an existing room or create a new one
+            </h2>
+          </div>
+          <div class="ui two column stackable center aligned grid">
+            <div class="middle aligned row">
+              <div class="column">
+                <div class="ui icon header">
+                  <i class="door open icon"></i>
+                  Join existing room
+                </div>
+                <div class="field">
+                  <div class="ui action input">
+                    <input
+                      type="text"
+                      minlength="4"
+                      name="room-id"
+                      id="room-id"
+                      oninvalid="validateField(this)"
+                      placeholder="Enter room Id"
+                    />
+                    <button
+                      class="ui icon button"
+                      type="button"
+                      id="paste-button"
+                    >
+                      <i class="paste icon"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="field">
+                  <button
+                    id="join-room-btn"
+                    type="submit"
+                    form="join-form"
+                    class="ui primary button"
+                    onclick="makeRoomIdRequired()"
+                  >
+                    Join room
+                  </button>
+                </div>
+              </div>
+              <div class="column">
+                <div class="ui icon header">
+                  <i class="plus circle icon"></i>
+                  Create a new room
+                </div>
+                <div class="field">
+                  <button
+                    formaction="/new-room"
+                    style="width: fit-content"
+                    class="ui primary button"
+                    onclick="makeRoomIdNotRequired()"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="ui container">
+        <div class="ui segments">
+          <h2 class="ui top attached header">What is disparty?</h2>
+          <div class="ui attached segment">
+            <p>
+              Disparty is a decentralized, peer to peer communication platform.
+              It offers chat, webcam streaming and streaming of local video so
+              friends and family can watch a movie together remotely.
+            </p>
+          </div>
+          <h2 class="ui attached header">Why is disparty?</h2>
+          <div class="ui attached segment">
+            <p>For three reasons:</p>
+            <div class="ui bulleted list">
+              <div class="item">
+                <div class="header">Private and secure.</div>
+                <div class="description">
+                  Disparty, unlike competitive solutions does not rely on a
+                  server to route video streams, as these are streamed directly
+                  from peer to peer. There is only a very small server used to
+                  establish the connection between individual peers.
+                </div>
+              </div>
+              <div class="item">
+                <div class="header">Completely open source.</div>
+                <div class="description">
+                  Don't trust us with the security? Visit
+                  <a href="https://github.com/adik6555/disparty"
+                    >our github repo</a
+                  >
+                  and see for yourself.
+                </div>
+              </div>
+              <div class="item">
+                <div class="header">We had to.</div>
+                <div class="description">
+                  Disparty was done as an educational project for a university
+                  course.
+                </div>
+              </div>
+            </div>
+          </div>
+          <h2 class="ui attached header">How is disparty?</h2>
+          <div class="ui attached segment">
+            <div class="ui bulleted list">
+              <div class="item">
+                Basically vanilla webdev package with
+                <a href="https://jquery.com/">jQuery</a>.
+              </div>
+              <div class="item">
+                <a href="https://fomantic-ui.com/">Fomantic-UI</a> for this
+                <em data-emoji=":fire:"></em> UI.
+              </div>
 
-    <section>
-        <div>
-            <a href="/new-room"><button>New room</button></a>
+              <div class="item">
+                <a href="https://github.com/feross/simple-peer/">Simple-peer</a>
+                to handle all the p2p streaming magic.
+              </div>
+
+              <div class="item">
+                <a href="https://nodejs.org/en/">NodeJs</a> and
+                <a href="https://expressjs.com/">ExpressJs</a> as a signalling
+                server.
+              </div>
+
+              <div class="item">
+                And lastly..substantial amount of cheap brainpower to put this
+                all together.
+              </div>
+            </div>
+          </div>
+          <h2 class="ui attached header">Where is disparty?</h2>
+          <div class="ui attached segment">
+            <p>
+              <a href="https://github.com/adik6555/disparty">Here.</a>
+            </p>
+          </div>
+          <h2 class="ui attached header">Who is disparty?</h2>
+          <div class="ui attached segment">
+            <p>
+              Two guys. Used to be three, third one dropped out.<em
+                data-emoji=":cry:"
+              ></em
+              ><br />
+              Namely:
+            </p>
+            <div class="ui bulleted list">
+              <div class="item">
+                <p><a href="https://github.com/adik6555">Adam Petro</a></p>
+              </div>
+              <div class="item">
+                <p>
+                  <a href="https://github.com/j-krzyz">Jakub Krzyzynski</a>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-            <h3>Join existing room</h3>
-            <form id="join-form" action="/join-room">
-                <input name="room-id" type="text">
-            </form>
-            <button id="paste-button">Paste</button>
-            <button type="submit" form="join-form">Join</button>
-        </div>
-    </section>
-    <footer>
-
-    </footer>
-
-</body>
-<script>
-    // Helper function to paste from clipboard to textfield - for developing purposes only.
-    const pasteButton = document.querySelector('#paste-button');
-    pasteButton.addEventListener('click', function(event) {
-        const inputField = document.getElementById('join-form').elements['room-id'];
-        navigator.clipboard.readText().then(text =>
-            inputField.value = text);
-    });
-</script>
+      </div>
+    </div>
+  </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    

@@ -1,0 +1,11 @@
+.ui.attached.segment {
+  font-size: 20px;
+}
+
+.main-caption {
+  font-size: 200%;
+}
+
+h2.ui.center.header.aligned.caption {
+  margin: 30px 0;
+}
