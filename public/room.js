@@ -10,7 +10,7 @@ let time_difference;
 const videoGrid = document.getElementById("video-grid");
 displayPromptWhenNicknameNotPresent().then(() => {
   navigator.mediaDevices
-    .getUserMedia({
+    .getDisplayMedia({
       video: true,
       audio: true,
     })
