@@ -3,6 +3,9 @@ let currentlyAdmin = false;
 let currentlyStreaming = false;
 let adminVideoStream;
 let myId = socket.id;
+let begin_time;
+let end_time;
+let time_difference;
 
 const videoGrid = document.getElementById("video-grid");
 displayPromptWhenNicknameNotPresent().then(() => {
@@ -21,6 +24,7 @@ function main(stream) {
   myId = socket.id;
   createChatWindow("group", myPeers);
   //On join, tell the server that you joined
+  begin_time = performance.now();
   socket.emit("join-room", ROOM_ID, sessionStorage.getItem("nickname"));
 
   //When received info on all users already in a room
@@ -59,6 +63,8 @@ function main(stream) {
   //Receive an answer from the other user
   socket.on("received-returned-signal", (payload) => {
     const item = myPeers.find((p) => p.peerId === payload.id);
+    end_time = performance.now();
+    time_difference = end_time - begin_time;
     item.peer.signal(payload.signal);
   });
 
