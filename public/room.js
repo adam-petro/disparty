@@ -233,7 +233,7 @@ function handleVideoProcessing(peerId, stream) {
 }
 
 function handleStartedStreaming() {
-  const selector = "#" + adminVideoStream.videoId;
+  const selector = adminVideoStream.videoId;
   if (!document.getElementById(selector)) {
     addVideoStream(
       adminVideoStream.stream,
